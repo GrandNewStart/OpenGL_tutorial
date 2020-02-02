@@ -26,8 +26,27 @@
     <ClInclude Include="dependencies\include\GLFW\glfw3native.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="dependencies\GLFW\include\GLFW\glfw3.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\GLFW\include\GLFW\glfw3native.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\GLEW\include\GL\eglew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\GLEW\include\GL\glew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\GLEW\include\GL\glxew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies\GLEW\include\GL\wglew.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="dependencies\lib-vc2019\glfw3.lib" />
+    <Library Include="dependencies\GLFW\lib-vc2019\glfw3.lib" />
+    <Library Include="dependencies\GLEW\lib\Release\Win32\glew32s.lib" />
   </ItemGroup>
 </Project>
