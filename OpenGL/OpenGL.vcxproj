@@ -172,6 +172,9 @@
     <Library Include="dependencies\GLEW\lib\Release\Win32\glew32s.lib" />
     <Library Include="dependencies\GLFW\lib-vc2019\glfw3.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\Basic.shader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
