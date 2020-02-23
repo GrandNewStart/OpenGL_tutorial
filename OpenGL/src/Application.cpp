@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 struct ShaderProgramSource{
     std::string vertexSource;
@@ -112,6 +113,7 @@ int main(void)
     }
     /* Check (OpenGL version) - Build (GPU driver version)*/
     std::cout << glGetString(GL_VERSION) << std::endl;
+
     {
         float positions[] = {
             -0.5f,-0.5f,
@@ -123,17 +125,15 @@ int main(void)
         unsigned int indices[] = { 0, 1, 2,
                                   2, 3, 0 };
 
-        ///Setting up Vertex Array
-        unsigned int vao; // contains the vertex array id
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
-        ///Setting up Vertex Buffer
+        /*Setting up Vertex Array*/
+        VertexArray va;
+        /*Setting up Vertex Buffer*/
         VertexBuffer vb(positions, 4 * 2 * sizeof(float));
-        ///Setting Layouts for the Vertex Buffer
-        GLCall(glEnableVertexAttribArray(0));
-        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0)); // Linking VAO and the Vertex Buffer
-
-        ///Setting up Index Buffer
+        /*Setting Layouts for the Vertex Buffer*/
+        VertexBufferLayout layout;
+        layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
+        /*Setting up Index Buffer*/
         IndexBuffer ib(indices, 6);
 
         ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
@@ -144,7 +144,7 @@ int main(void)
         ASSERT(location != -1);
         GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
-        ///Unbinding Everything
+        /*Unbinding Everything*/
         GLCall(glBindVertexArray(0));
         GLCall(glUseProgram(0));
         GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
@@ -158,16 +158,15 @@ int main(void)
         {
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
-            ///Bind Shader
+            /*Bind Shader*/
             GLCall(glUseProgram(shader));
-            ///Set up Uniform
+            /*Set up Uniform*/
             GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
-            ///Bind Vertex Array
-            GLCall(glBindVertexArray(vao));
-            ///Bind Index Buffer
+            /*Bind Vertex Array*/
+            va.Bind();
+            /*Bind Index Buffer*/
             ib.Bind();
-            ///DRAW!
+            /*DRAW!*/
             GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
             if (r > 1.0f)
                 increment = -0.05f;
