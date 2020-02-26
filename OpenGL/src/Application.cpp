@@ -11,6 +11,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "texture.h"
 
 int main(void)
 {
@@ -46,21 +47,25 @@ int main(void)
 
     {
         float positions[] = {
-            -0.5f,-0.5f,
-             0.5f,-0.5f,
-             0.5f, 0.5f,
-            -0.5f, 0.5f
+            -0.5f,-0.5f, 0.0f, 0.0f,
+             0.5f,-0.5f, 1.0f, 0.0f,
+             0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.0f, 1.0f
         };
 
         unsigned int indices[] = { 0, 1, 2,
                                   2, 3, 0 };
 
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+        GLCall(glEnable(GL_BLEND));
+
         /*Setting up Vertex Array*/
         VertexArray va;
         /*Setting up Vertex Buffer*/
-        VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+        VertexBuffer vb(positions, 4 * 4 * sizeof(float));
         /*Setting Layouts for the Vertex Buffer*/
         VertexBufferLayout layout;
+        layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
@@ -72,7 +77,11 @@ int main(void)
         /*Using Shader*/
         shader.Bind();
         /*Setting Uniform*/
-        shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        //shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+        Texture texture("res/textures/opengl_logo.png");
+        texture.Bind();
+        shader.SetUniformi("u_Texture", 0);
 
         /*Unbinding Everything*/
         va.Unbind(); 
@@ -93,7 +102,7 @@ int main(void)
             /*Use Shader*/
             shader.Bind();
             /*Set up Uniform*/
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+            //shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
            
             /*Bind VAO, Bind IB, DRAW!*/
             renderer.Draw(va, ib, shader);
