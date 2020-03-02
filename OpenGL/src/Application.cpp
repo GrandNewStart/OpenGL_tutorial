@@ -1,5 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -47,17 +50,17 @@ int main(void)
 
     {
         float positions[] = {
-            -0.5f,-0.5f, 0.0f, 0.0f,
-             0.5f,-0.5f, 1.0f, 0.0f,
+             -0.5f, -0.5f, 0.0f, 0.0f,
+             0.5f, -0.5f, 1.0f, 0.0f,
              0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.0f, 1.0f
+             -0.5f, 0.5f, 0.0f, 1.0f
         };
 
         unsigned int indices[] = { 0, 1, 2,
                                   2, 3, 0 };
 
-        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
         /*Setting up Vertex Array*/
         VertexArray va;
@@ -71,6 +74,10 @@ int main(void)
 
         /*Setting up Index Buffer*/
         IndexBuffer ib(indices, 6);
+
+        glm::mat4 proj = glm::ortho(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+        glm::mat4 mvp = proj * view;
 
         /*Setting up Shader*/
         Shader shader("res/shaders/Basic.shader");
@@ -89,29 +96,32 @@ int main(void)
         vb.Unbind();
         ib.Unbind();
 
-        Renderer renderer;
-
-        float r = 0.0f;
-        float increment = 0.05f;
+        Renderer renderer;        
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
             /*Use Shader*/
             shader.Bind();
-            /*Set up Uniform*/
-            //shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-           
-            /*Bind VAO, Bind IB, DRAW!*/
-            renderer.Draw(va, ib, shader);
 
-            if (r > 1.0f)
-                increment = -0.05f;
-            else if (r < 0.0f)
-                increment = 0.05f;
-            r += increment;
+            {
+                glm::vec3 translationA(-0.5f, -0.5f, 0.0f);
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
+                mvp *= model;
+                shader.SetUniformMat4f("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
+
+            {
+                glm::vec3 translationB(0.5f, 0.5f, 0.0f);
+                glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
+                mvp *= model;
+                shader.SetUniformMat4f("u_MVP", mvp);
+                renderer.Draw(va, ib, shader);
+            }
 
             /* Swap front and back buffers */
             GLCall(glfwSwapBuffers(window));
@@ -119,6 +129,6 @@ int main(void)
             GLCall(glfwPollEvents());
         }
     }
-    glfwTerminate();
+
     return 0;
 }
